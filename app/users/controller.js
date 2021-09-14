@@ -9,7 +9,10 @@ module.exports = {
 			const alert = { message: alertMessage, status: alertStatus };
 
 			if (req.session.user === null || req.session.user === undefined) {
-				res.render("admin/users/view_signin", { alert });
+				res.render("admin/users/view_signin", {
+					alert,
+					title: "Sign In",
+				});
 			} else {
 				res.redirect("/dashboard");
 			}
