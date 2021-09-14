@@ -6,7 +6,7 @@ module.exports = {
 				`Mohon maaf, sesi anda telah berakhir, silahkan login kembali`
 			);
 			req.flash("alertStatus", "danger");
-			res.redirect("/nominal");
+			res.redirect("/");
 		} else {
 			next();
 		}
