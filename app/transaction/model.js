@@ -44,8 +44,8 @@ let transactionSchema = mongoose.Schema(
 				minlength: [11, "Panjang nomor minimal 11 angka"],
 			},
 		},
-		category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
-		user: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+		user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 	},
 	{ timeStamps: true }
 );
