@@ -1,6 +1,7 @@
 const Voucher = require("./model");
 const Category = require("../category/model");
 const Nominal = require("../nominal/model");
+const Payment = require("../payment/model");
 const path = require("path");
 const fs = require("fs");
 const config = require("../../config");
@@ -33,9 +34,11 @@ module.exports = {
 		try {
 			const category = await Category.find();
 			const nominal = await Nominal.find();
+			const payment = await Payment.find().populate("banks");
 			res.render("admin/voucher/create", {
 				category,
 				nominal,
+				payment,
 				name: req.session.user.name,
 				title: "Voucher",
 			});
@@ -48,7 +51,7 @@ module.exports = {
 
 	actionCreate: async (req, res) => {
 		try {
-			const { name, category, nominals } = req.body;
+			const { name, category, nominals, payment } = req.body;
 			if (req.file) {
 				let tmp_path = req.file.path;
 				let originalExt =
@@ -71,6 +74,7 @@ module.exports = {
 							name,
 							category,
 							nominals,
+							payment,
 							thumbnail: filename,
 						});
 
@@ -90,6 +94,7 @@ module.exports = {
 					name,
 					category,
 					nominals,
+					payment,
 				});
 
 				await voucher.save();
@@ -111,14 +116,28 @@ module.exports = {
 
 			const category = await Category.find();
 			const nominal = await Nominal.find();
+			const payment = await Payment.find();
+			const paymentBank = await Payment.find().populate("banks");
+			console.log(paymentBank);
 			const voucher = await Voucher.findOne({ _id: id })
 				.populate("category")
-				.populate("nominals");
-			console.log(voucher);
+				.populate("nominals")
+				.populate([
+					{
+						path: "payment",
+						model: "Payment",
+						populate: {
+							path: "banks",
+							model: "Bank",
+						},
+					},
+				]);
 			res.render("admin/voucher/edit", {
 				voucher,
 				category,
 				nominal,
+				payment,
+				paymentBank,
 				name: req.session.user.name,
 				title: "Voucher",
 			});
@@ -132,7 +151,7 @@ module.exports = {
 	actionEdit: async (req, res) => {
 		try {
 			const { id } = req.params;
-			const { name, category, nominals } = req.body;
+			const { name, category, nominals, payment } = req.body;
 			if (req.file) {
 				let tmp_path = req.file.path;
 				let originalExt =
@@ -165,6 +184,7 @@ module.exports = {
 								name,
 								category,
 								nominals,
+								payment,
 								thumbnail: filename,
 							}
 						);
@@ -187,6 +207,7 @@ module.exports = {
 						name,
 						category,
 						nominals,
+						payment,
 					}
 				);
 

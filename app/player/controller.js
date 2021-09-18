@@ -14,7 +14,8 @@ module.exports = {
 		try {
 			const voucher = await Voucher.find()
 				.select("_id name status category thumbnail")
-				.populate("category");
+				.populate("category")
+				.populate("payment");
 			res.status(200).json({ data: voucher });
 		} catch (error) {
 			res.status(500).json({
@@ -28,7 +29,17 @@ module.exports = {
 			const voucher = await Voucher.findOne({ _id: id })
 				.populate("category")
 				.populate("nominals")
-				.populate("user", "_id name phoneNumber");
+				.populate("user", "_id name phoneNumber")
+				.populate([
+					{
+						path: "payment",
+						model: "Payment",
+						populate: {
+							path: "banks",
+							model: "Bank",
+						},
+					},
+				]);
 
 			if (!voucher) {
 				return res.status(404).json({ message: "voucher not found.." });
